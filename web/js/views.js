@@ -409,7 +409,7 @@ const V = {
         <td style="font-size:13px">${(w.segments || []).map(x => `<span class="chip stat" style="margin:2px">${
           x.role === 'STEM' ? 'جذع' : x.role === 'PREFIX' ? 'سابقة' : x.role === 'SUFFIX' ? 'لاحقة' : '—'
         }: ${esc(x.features)}</span>`).join('')}</td></tr>`).join('')}</tbody></table></div>`;
-    Graph.force(document.getElementById('aygraph'), { nodes: g.nodes, links: g.links }, { height: 460, onSelect: () => {} });
+    Graph.ayah(document.getElementById('aygraph'), { nodes: g.nodes, links: g.links }, {});
 
     // تمييز كلمة معيّنة عند القدوم من نتيجة بحث (‎#/ayah/2/255?w=3‎)
     const want = +((State.read().params.get('w')) || 0);
@@ -691,7 +691,7 @@ const V = {
   /* ------------------------------ الشبكات ------------------------------ */
   async graph(main, params) {
     const sura = params.get('sura') || '';
-    const minw = params.get('minw') || 4;
+    const minw = params.get('minw') || 12;
     main.innerHTML = `
       ${this.crumbs([{ label: 'الرئيسية', href: '#/' }, { label: 'شبكة الجذور' }])}
       <h1 class="page">شبكة تزامن الجذور</h1>
@@ -706,9 +706,9 @@ const V = {
       <div class="graphwrap" id="gwrap" style="min-height:660px"></div>`;
     const load = async () => {
       const s = document.getElementById('g-sura').value.trim();
-      const mw = document.getElementById('g-minw').value || 4;
+      const mw = document.getElementById('g-minw').value || 12;
       document.getElementById('g-info').textContent = 'جارٍ الحساب…';
-      const d = await API.graphRoots({ sura: s || undefined, min_weight: mw, limit_nodes: 140 });
+      const d = await API.graphRoots({ sura: s || undefined, min_weight: mw, limit_nodes: 60 });
       document.getElementById('g-info').textContent =
         `${ar(d.nodes.length)} جذراً · ${num(d.links.length)} رابطاً · ${num(d.scope.ayahs)} آية في النطاق`;
       Graph.force(document.getElementById('gwrap'), d, { height: 660, onSelect: n => location.hash = '#/root/' + n.id });
@@ -718,7 +718,7 @@ const V = {
     document.getElementById('g-apply').onclick = load;
     const d = await load();
     // أعلى الأزواج المتزامنة
-    const top = d.links.slice(0, 18).map(l => {
+    const top = d.links.slice().sort((a, b) => b.weight - a.weight).slice(0, 18).map(l => {
       const a = d.nodes.find(n => n.id === l.source || n.id === l.source.id);
       const b = d.nodes.find(n => n.id === l.target || n.id === l.target.id);
       const la = (typeof l.source === 'object' ? l.source : a)?.label || '?';

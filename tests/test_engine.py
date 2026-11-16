@@ -287,6 +287,47 @@ class TestTagsRootsAndGraphs(unittest.TestCase):
         self.assertGreaterEqual(len(g["nodes"]), 50)          # ٥٠ كلمة
         self.assertTrue(g["links"])
 
+    def test_ayah_graph_contract_for_layered_draw(self):
+        """العقد موصولة الصلة التي يفرضها الرسم الطبقي: روابط تُحلّ، وترتيب مصحفي، وأنواع."""
+        g = self.e.ayah_graph(2, 255)
+        ids = {n["id"] for n in g["nodes"]}
+        words = [n for n in g["nodes"] if n.get("type") == "word"]
+        roots = [n for n in g["nodes"] if n.get("type") == "root"]
+        self.assertEqual(len(words), 50)
+        self.assertTrue(roots)
+        self.assertTrue(all(n.get("n") for n in words), "كل كلمة تحمل ترتيبها في الآية")
+        for l in g["links"]:
+            self.assertIn(l["source"], ids)
+            self.assertIn(l["target"], ids)
+            self.assertIn(l["kind"], ("sequence", "root"))
+        seq = [l for l in g["links"] if l["kind"] == "sequence"]
+        self.assertEqual(len(seq), len(words) - 1)            # تتابع الكلمات المتجاورات
+        word_ids = {n["id"] for n in words}
+        root_ids = {n["id"] for n in roots}
+        for l in g["links"]:
+            if l["kind"] == "root":
+                self.assertIn(l["source"], word_ids)
+                self.assertIn(l["target"], root_ids)
+
+    def test_ayah_graph_links_carry_no_weight_field(self):
+        """رسم الآية يرسم بالتسلسل لا بالوزن — تسجيل صريح كي لا يُفترض وجود weight فيه."""
+        g = self.e.ayah_graph(2, 255)
+        self.assertFalse(any("weight" in l for l in g["links"]))
+
+    def test_graphs_that_render_by_weight_always_have_it(self):
+        """كل رسم يُعرض بالوزن (الجذور/الكلمة) يحمل وزناً رقمياً لكل رابط."""
+        for g in (self.e.root_graph(limit_nodes=20), self.e.word_graph("الصلاة", limit=5)):
+            for l in g["links"]:
+                self.assertIn("weight", l)
+                self.assertGreater(l["weight"], 0)
+
+    def test_mindmap_contract_for_radial_draw(self):
+        mm = self.e.mindmap("rHm", depth=2)
+        ids = {n["id"] for n in mm["nodes"]}
+        for l in mm["links"]:
+            self.assertIn(l["source"], ids)
+            self.assertIn(l["target"], ids)
+
     def test_word_graph_seed_is_first_node(self):
         d = self.e.word_graph("الصلاة", limit=5)
         self.assertTrue(d["found"])
