@@ -84,12 +84,15 @@ header.top {
 .top-inner { max-width: 1280px; margin: 0 auto; padding: 12px 22px; display: flex; align-items: center; gap: 18px; }
 .brand { display: flex; align-items: center; gap: 12px; cursor: pointer; flex: 0 0 auto; }
 .brand .mark {
-  width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
-  background: linear-gradient(150deg, var(--green) 0%, var(--green-2) 100%);
-  color: var(--gold-2); font-family: var(--decor-font); font-size: 24px;
-  box-shadow: var(--shadow-sm); border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+  width: 42px; height: 42px; display: block; flex: 0 0 auto;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .18));
 }
-.brand h1 { font-family: var(--display-font); font-size: 20px; margin: 0; font-weight: 600; letter-spacing: .2px; }
+.brand .mark .ring, .brand .mark .stem { fill: var(--gold); }
+.brand .mark .letter { fill: var(--green-2); }
+.brand h1 {
+  font-family: var(--decor-font); font-weight: 700; font-size: 23px; margin: 0;
+  line-height: 1.08; letter-spacing: .2px;
+}
 .brand small { display: block; font-size: 11.5px; color: var(--ink-faint); font-family: var(--ui-font); line-height: 1.2; }
 
 nav.tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-inline-start: auto; }
