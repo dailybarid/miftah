@@ -1,18 +1,20 @@
 /* util.js — أدوات مساعدة: أرقام عربية، مراجع، تهريب النص، الحالة في الرابط */
 
-/* الأرقام العربية-الهندية (المشرقية) كما تُكتب في المصحف */
-const AR_DIGITS = '٠١٢٣٤٥٦٧٨٩';
+/* الأرقام: لاتينية (0-9) في كل الواجهة.
+   الاسم ar() باقٍ كما هو لأن كل العروض تناديه — فالتغيير هنا يكفي ليشمل الواجهة كلها.
+   (كانت تحوّل إلى الأرقام العربية-الهندية ٠١٢٣…؛ أُلغِي ذلك بطلب من مالك المشروع.) */
 function ar(n) {
-  return String(n).replace(/[0-9]/g, d => AR_DIGITS[+d]);
+  if (n === null || n === undefined) return '—';
+  return String(n);
 }
-/* فصل الآلاف بالفاصلة العربية */
+/* فصل الآلاف بالصيغة اللاتينية: 1,642 */
 function num(n) {
   if (n === null || n === undefined) return '—';
-  return ar(Number(n).toLocaleString('en-US'));
+  return Number(n).toLocaleString('en-US');
 }
 function pct(x, digits = 2) {
   if (x === null || x === undefined) return '—';
-  return ar(Number(x).toFixed(digits)) + '٪';
+  return Number(x).toFixed(digits) + '%';
 }
 function esc(s) {
   return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));

@@ -89,6 +89,7 @@ const App = {
     const q = document.getElementById('q').value.trim();
     this.hideSuggest();
     if (!q) return;
+    // تُقبل الأرقام العربية-الهندية في الإدخال (٢:٢٥٥) لكن العرض كله لاتيني
     const m = q.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).match(/^(\d{1,3})\s*[:/.]\s*(\d{1,3})$/);
     if (m) return this.go(['ayah', m[1], m[2]]);
     if (/^جذر:|^root:/.test(q)) {

@@ -8,6 +8,7 @@
 """
 import json
 import os
+import re
 import sqlite3
 import sys
 import unicodedata
@@ -413,6 +414,21 @@ class TestHttpApi(unittest.TestCase):
             self.assertGreater(t["size"], 0)
             self.assertTrue(t["roots"])
             self.assertIn("bw", t["roots"][0])       # يلزم للخريطة الذهنية
+
+    def test_api_never_emits_arabic_indic_digits(self):
+        """الأرقام لاتينية في كل الواجهة: نتحقّق أن الخادم لا يُرسل أرقاماً عربية-هندية أصلاً
+        (٠-٩) في أي استجابة — لا في المراجع ولا في التسميات ولا في الإحصاءات."""
+        ar_digits = re.compile(r"[\u0660-\u0669]")
+        for path in ("/api/meta", "/api/stats", "/api/topics", "/api/sura/114?words=1",
+                     "/api/ayah/2/255", "/api/roots?limit=20",
+                     "/api/search?q=%D8%A7%D9%84%D8%B1%D8%AD%D9%85%D9%86&limit=3",
+                     "/api/search?q=%D8%A7%D9%84%D8%B5%D9%84%D8%A7%D8%A9&mode=word_exact&limit=3"):
+            with urllib.request.urlopen(BASE + path, timeout=60) as r:
+                body = r.read().decode()
+            m = ar_digits.search(body)
+            self.assertIsNone(
+                m, f"{path}: أرقام عربية-هندية في الاستجابة قرب "
+                   f"...{body[max(0, m.start() - 70):m.start() + 40]}..." if m else "")
 
     def test_stats_endpoint_totals(self):
         d = self._get("/api/stats")

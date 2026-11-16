@@ -105,7 +105,7 @@ const V = {
       <div class="card">
         <h3>ابدأ البحث</h3>
         <div class="chips">
-          ${['الرحمن', 'الصلاة', 'الكتاب', 'نور', 'جذر:رحم', '٢:٢٥٥', 'كهيعص', 'محمدرسول']
+          ${['الرحمن', 'الصلاة', 'الكتاب', 'نور', 'جذر:رحم', '2:255', 'كهيعص', 'محمدرسول']
             .map(q => `<button class="chip" data-quick="${esc(q)}">${esc(q)}</button>`).join('')}
         </div>
       </div>
@@ -228,7 +228,7 @@ const V = {
         </div>
         <div class="grid cols-2" style="margin-top:14px">
           <div><h3>مكية/مدنية</h3><div id="revdonut"></div></div>
-          <div><h3>الصفحات (أول ٢٤ صفحة فيها ورود)</h3><div id="pageheat" class="chart"></div></div>
+          <div><h3>الصفحات (أول 24 صفحة فيها ورود)</h3><div id="pageheat" class="chart"></div></div>
         </div>
       </div>` : '';
 
@@ -299,7 +299,7 @@ const V = {
         <details style="flex:1">
           <summary style="cursor:pointer;color:var(--ink-faint);font-size:13.5px">مساعدة بصيغ البحث</summary>
           <div style="font-size:13.5px;color:var(--ink-soft);margin-top:6px">
-            <div>• <code>٢:٢٥٥</code> أو <code>2:255</code> → فتح الآية مباشرة.</div>
+            <div>• <code>2:255</code> → فتح الآية مباشرة (وتُقبل الأرقام العربية-الهندية ٢:٢٥٥ أيضاً كمدخل).</div>
             <div>• <code>جذر:رحم</code> → صفحة الجذر وكل مشتقاته.</div>
             <div>• <code>«بسم الله الرحمن الرحيم»</code> → مطابقة العبارة كلماتٍ متتابعة.</div>
             <div>• <code>محمدرسول</code> مع نمط «حروف متصلة» → يجد «مُّحَمَّدٌ رَّسُولُ» رغم اختلاف الكلمات.</div>
