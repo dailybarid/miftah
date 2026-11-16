@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مِفتاح — محرك بحث القرآن الكريم</title>
+<meta name="description" content="محرك بحث وتحليل للقرآن الكريم: بحث دقيق يحترم التشكيل، جذور وموارد صرفية، إحصاءات الحروف والمواضع، وشبكات علاقات وخريطة ذهنية.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230e4a38'/><text y='72' x='50' font-size='62' text-anchor='middle' fill='%23d8b45a'>ﷲ</text></svg>">
+<link rel="stylesheet" href="/static/css/fonts.css?v=1.1">
+<link rel="stylesheet" href="/static/css/app.css?v=1.1">
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand" data-nav="home">
+      <div class="mark">م</div>
+      <div>
+        <h1>مِفتاح</h1>
+        <small>محرك بحث وتحليل القرآن الكريم</small>
+      </div>
+    </div>
+
+    <div class="searchbar">
+      <input id="q" type="search" autocomplete="off" placeholder="ابحث كلمة أو عبارة… مثال: الرحمن · ٢:٢٥٥ · جذر:رحم"
+             aria-label="حقل البحث">
+      <button class="go" id="go">ابحث</button>
+      <div class="suggest" id="suggest" hidden></div>
+    </div>
+
+    <nav class="tabs" id="tabs">
+      <button data-nav="home">الرئيسية</button>
+      <button data-nav="search">البحث المتقدم</button>
+      <button data-nav="mushaf">المصحف</button>
+      <button data-nav="graph">شبكة الجذور</button>
+      <button data-nav="mindmap">الخريطة الذهنية</button>
+      <button data-nav="stats">الإحصاءات</button>
+      <button data-nav="about">المصادر</button>
+    </nav>
+
+    <button class="icon-btn" id="theme" title="تبديل السمة (ت)">◐</button>
+  </div>
+</header>
+
+<main class="shell" id="main">
+  <div class="loading"><span class="spin"></span></div>
+</main>
+
+<footer class="foot">
+  <div><strong>مِفتاح</strong> — محرك بحث وتحليل للقرآن الكريم. كل النتائج مُحسوبة من النص الأصلي، ومواضع الحروف والكلمات مُستخرجة آلياً.</div>
+  <div class="srcs">
+    <span>النص: <a href="https://tanzil.net" target="_blank" rel="noopener">تنزيل</a> (رسم عثماني + إملائي، CC BY-ND 3.0)</span>
+    <span>الصرف: <a href="https://corpus.quran.com" target="_blank" rel="noopener">المجموعة العربية القرآنية</a> v0.4 (كايس ديوكس، GPL)</span>
+    <span>الخطوط: KFGQPC Uthmanic Hafs · Amiri Quran · IBM Plex Sans Arabic (OFL)</span>
+    <span><a href="/api/docs" target="_blank">واجهة البرمجة (API)</a></span>
+  </div>
+</footer>
+
+<div class="tip" id="tip"></div>
+
+<script src="/static/vendor/d3.min.js"></script>
+<script src="/static/js/api.js?v=1.1"></script>
+<script src="/static/js/util.js?v=1.1"></script>
+<script src="/static/js/charts.js?v=1.1"></script>
+<script src="/static/js/graph.js?v=1.1"></script>
+<script src="/static/js/views.js?v=1.1"></script>
+<script src="/static/js/app.js?v=1.1"></script>
+</body>
+</html>

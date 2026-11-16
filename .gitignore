@@ -1,0 +1,22 @@
+# قاعدة البيانات المبنية لا تُحفظ في المستودع (تُبنى بأمر واحد)
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/topics_report.json
+
+# مخلّفات بايثون
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# محرّرات وأنظمة
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# مخرجات مؤقتة
+*.log
+/tmp/

@@ -1,0 +1,87 @@
+{
+ "generated_at": "2026-11-16T21:48:14",
+ "sources": {
+  "quran_uthmani": {
+   "file": "quran-uthmani.txt",
+   "sha256": "bf4f57b968d03f4131c070b1e285da9be0e0a108a21c910e872801ca273312c8",
+   "bytes": 1370878
+  },
+  "quran_simple_clean": {
+   "file": "quran-simple-clean.txt",
+   "sha256": "228df2a717671aeb9d2ff573002bd28d6b3f973f4bc7153554e3a81663d67610",
+   "bytes": 781176
+  },
+  "corpus_morphology": {
+   "file": "quranic-corpus-morphology-0.4.txt",
+   "sha256": "a1d12923815341face765083805d2148ed2d9f5cc3f7d6665219d887675d8c46",
+   "bytes": 6309503
+  },
+  "tanzil_metadata": {
+   "file": "quran-data.xml",
+   "sha256": "8867c1d88191472adec9db694b3cd9f135b1a2ef580574d32cf888dcb22c5c7a",
+   "bytes": 77234
+  }
+ },
+ "ayahs": 6236,
+ "words": 77433,
+ "letters": 325386,
+ "diacritics": 290931,
+ "suras": 114,
+ "roots": 1642,
+ "lemmas": 4832,
+ "distinct_words": 14657,
+ "distinct_letters": 36,
+ "chars": 695149,
+ "basmalas_stripped": 112,
+ "sajdas": 15,
+ "morph_segments": 128223,
+ "words_with_root": 49967,
+ "words_without_root": 27466,
+ "alignment": {
+  "ayahs_need_alignment": 6,
+  "unmatched_words": 0,
+  "corpus_word_lists_mismatch": 0,
+  "imlaei_align_fail": 0
+ },
+ "corpus_word_merges": [
+  {
+   "sura": 2,
+   "ayah": 181,
+   "corpus_word": 3,
+   "uthmani_words": [
+    3,
+    4
+   ]
+  },
+  {
+   "sura": 8,
+   "ayah": 6,
+   "corpus_word": 4,
+   "uthmani_words": [
+    4,
+    5
+   ]
+  },
+  {
+   "sura": 13,
+   "ayah": 37,
+   "corpus_word": 8,
+   "uthmani_words": [
+    8,
+    9
+   ]
+  },
+  {
+   "sura": 37,
+   "ayah": 130,
+   "corpus_word": 3,
+   "uthmani_words": [
+    3,
+    4
+   ]
+  }
+ ],
+ "build_seconds": 18.86,
+ "db_bytes": 79187968,
+ "db_sha256": "486e902af39363aa51c07fd1a70edcaea4fa75d61029b54a4f6c506e60e752e4"
+}
