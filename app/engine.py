@@ -481,9 +481,11 @@ class QuranEngine:
                     context: bool = True) -> dict:
         first = m.word_ids[0]
         i = first - 1
-        sura, ayah_id, num = self._w_sura[i], self._w_ayah[i], self._w_num[i]
+        sura, ayah_id = self._w_sura[i], self._w_ayah[i]
         row = self.q("""SELECT a.*, s.name_ar, s.name_translit, s.revelation
                         FROM ayah a JOIN sura s ON s.number=a.sura WHERE a.id=?""", (ayah_id,))[0]
+        # رقم الآية داخل السورة من جدول الآيات — لا من موضع الكلمة داخل الآية (كان يُفسد جميع المراجع)
+        num = row["number"]
         words = self.q("""SELECT id,number,text_uthmani,text_imlaei,letter_count,
                                  letter_start_ayah,letter_start_global,root_bw,lemma_bw,
                                  pos,pos_ar FROM word WHERE ayah_id=? ORDER BY number""", (ayah_id,))
@@ -563,16 +565,18 @@ class QuranEngine:
                       word_ids)[0]["c"]
         suras_n = self.q(f"""SELECT COUNT(DISTINCT w.sura) c FROM word w WHERE w.id IN ({suf})""",
                          word_ids)[0]["c"]
-        first_w = self.q("SELECT id,sura,number FROM word WHERE id=?", (min(word_ids),))[0]
-        last_w = self.q("SELECT id,sura,number FROM word WHERE id=?", (max(word_ids),))[0]
+        first_w = self.q("""SELECT w.id,w.sura,a.number AS ayah FROM word w
+                            JOIN ayah a ON a.id=w.ayah_id WHERE w.id=?""", (min(word_ids),))[0]
+        last_w = self.q("""SELECT w.id,w.sura,a.number AS ayah FROM word w
+                           JOIN ayah a ON a.id=w.ayah_id WHERE w.id=?""", (max(word_ids),))[0]
         return {
             "occurrences": len(word_ids),
             "ayat": ayat, "suras": suras_n,
             "ayat_ratio": round(ayat / 6236 * 100, 4),
-            "first_occurrence": {"ref": f"{first_w['sura']}:{first_w['number']}",
+            "first_occurrence": {"ref": f"{first_w['sura']}:{first_w['ayah']}",
                                  "word_index_in_quran": first_w["id"],
                                  "share_before": round(first_w["id"] / 77433 * 100, 4)},
-            "last_occurrence": {"ref": f"{last_w['sura']}:{last_w['number']}",
+            "last_occurrence": {"ref": f"{last_w['sura']}:{last_w['ayah']}",
                                 "word_index_in_quran": last_w["id"],
                                 "share_after": round((77433 - last_w["id"]) / 77433 * 100, 4)},
             "span_words": last_w["id"] - first_w["id"],

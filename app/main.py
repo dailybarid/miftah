@@ -76,7 +76,9 @@ def filters_from_query(
 # ---------------------------------------------------------------------------
 @app.get("/", include_in_schema=False)
 def index():
-    return FileResponse(WEB / "index.html")
+    # لا تُخزَّن صفحة الهيكل في المتصفح: تغيير الرابط (#/…) لا يعيد تحميل المستند،
+    # فيبقى المستخدم على نسخة قديمة من السكربتات. الملفات الثابتة مُرقَّمة (?v=) فتُخزَّن.
+    return FileResponse(WEB / "index.html", headers={"Cache-Control": "no-cache, must-revalidate"})
 
 
 @app.get("/healthz", include_in_schema=False)
@@ -386,17 +388,21 @@ def api_graph_word(w: str, limit: int = 25, min_weight: int = 1):
 def api_topics():
     d = engine()
     try:
-        rows = d.q("SELECT * FROM topic ORDER BY weight DESC")
+        rows = d.q("SELECT * FROM topic ORDER BY weight DESC LIMIT 200")
     except Exception:
         return {"topics": [], "note": "لم تُبنَ المحاور بعد — شغّل scripts/build_topics.py"}
     out = []
     for t in rows:
-        members = d.q("""SELECT r.id,r.arabic,r.count FROM topic_root tr
+        members = d.q("""SELECT r.id,r.arabic,r.bw,r.count FROM topic_root tr
                          JOIN root r ON r.id=tr.root_id WHERE tr.topic_id=?
-                         ORDER BY tr.weight DESC LIMIT 30""", (t["id"],))
+                         ORDER BY tr.weight DESC LIMIT 60""", (t["id"],))
         out.append({"id": t["id"], "label": t["label"], "weight": t["weight"],
                     "size": t["size"], "roots": [dict(m) for m in members]})
-    return {"topics": out}
+    roots_total = d.q("SELECT COUNT(*) c FROM root")[0]["c"]
+    assigned = d.q("SELECT COUNT(*) c FROM topic_root")[0]["c"]
+    return {"topics": out, "topics_total": len(out), "roots_total": roots_total,
+            "roots_assigned": assigned,
+            "coverage": round(assigned / roots_total * 100, 2) if roots_total else 0.0}
 
 
 @app.get("/api/random", summary="آية عشوائية")

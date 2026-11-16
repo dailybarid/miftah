@@ -69,6 +69,7 @@ const App = {
         case 'mushaf': await V.mushaf(this.main, params); break;
         case 'stats': await V.stats(this.main); break;
         case 'graph': await V.graph(this.main, params); break;
+        case 'topics': await V.topics(this.main); break;
         case 'mindmap': await V.mindmap(this.main, params); break;
         case 'about': await V.about(this.main); break;
         default: await V.home(this.main);
@@ -118,7 +119,7 @@ const App = {
 
   /* ------------------------------- تفويض الأزرار ------------------------------- */
   delegate(e) {
-    const t = e.target.closest('[data-goto],[data-quick],[data-wordid],[data-tag],[data-root],[data-copy],[data-audio],[data-print],[data-page],[data-share],[data-graph-ayah],[data-graph-sura],[data-prev],[data-next],[data-word="w"],[data-nav]');
+    const t = e.target.closest('[data-goto],[data-quick],[data-wordid],[data-tag],[data-root],[data-mindmap],[data-copy],[data-audio],[data-print],[data-page],[data-share],[data-graph-ayah],[data-graph-sura],[data-prev],[data-next],[data-word="w"],[data-nav]');
     if (!t) return;
 
     if (t.dataset.word === 'w') {
@@ -141,6 +142,7 @@ const App = {
     }
     if (t.dataset.wordid) return this.go(['word', t.dataset.wordid]);
     if (t.dataset.tag) return this.go(['tag', encodeURIComponent(t.dataset.tag)]);
+    if (t.dataset.mindmap) return this.go(['mindmap'], { seed: t.dataset.mindmap });
     if (t.dataset.root) return this.go(['root', t.dataset.root]);
     if (t.dataset.graphAyah) { const [s, a] = t.dataset.graphAyah.split('/'); return this.go(['ayah', s, a]); }
     if (t.dataset.graphSura) return this.go(['graph'], { sura: t.dataset.graphSura, minw: 4 });

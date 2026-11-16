@@ -83,6 +83,8 @@ const V = {
     const m = await this.meta();
     const t = m.totals;
     const st = await API.stats();
+    let topics = [];
+    try { topics = (await API.topics()).topics || []; } catch (e) { topics = []; }
     main.innerHTML = `
       <h1 class="page">مِفتاح — البحث في القرآن الكريم بكل تفاصيله</h1>
       <p class="lede">بحث دقيق يحترم الرسم العثماني والتشكيل، مع مواضع كل كلمة وحرف: السورة، الآية،
@@ -107,6 +109,8 @@ const V = {
             .map(q => `<button class="chip" data-quick="${esc(q)}">${esc(q)}</button>`).join('')}
         </div>
       </div>
+
+      ${this._topicsTeaser(topics)}
 
       <div class="grid cols-2">
         <div class="card"><h3>توزيع الآيات على الأجزاء الثلاثين</h3><div id="juzchart" class="chart"></div></div>
@@ -159,6 +163,20 @@ const V = {
 
   tile(k, v, s = '') {
     return `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`;
+  },
+
+  /* بطاقة مختصرة للمحاور الموضوعية في الصفحة الرئيسية (تظهر فقط إذا بُنيت المحاور) */
+  _topicsTeaser(topics) {
+    if (!topics || !topics.length) return '';
+    return `
+      <div class="card">
+        <h3>المحاور الموضوعية <span style="font-size:13px;color:var(--ink-faint)">(${ar(topics.length)} محوراً — اضغط للتفصيل)</span></h3>
+        <div class="chips">
+          ${topics.slice(0, 12).map(t => `<button class="chip" data-nav="topics">
+            <span style="font-family:var(--quran-font);font-size:16px">${esc(t.label)}</span>
+            <span style="color:var(--ink-faint)"> ${ar(t.size)}</span></button>`).join('')}
+        </div>
+      </div>`;
   },
 
   /* ------------------------------ نتائج البحث ------------------------------ */
@@ -895,6 +913,66 @@ const V = {
           <td class="num">${ar(m.letter_count)}</td>
           <td><button class="chip" data-wordid="${m.id}">تفصيل</button></td></tr>`).join('')}</tbody>
       </table></div></div>`;
+  },
+
+  /* ------------------------------ المحاور الموضوعية ------------------------------ */
+  async topics(main) {
+    main.innerHTML = `<div class="loading"><span class="spin"></span></div>`;
+    let d;
+    try { d = await API.topics(); } catch (e) { d = { topics: [] }; }
+    const list = d.topics || [];
+    if (!list.length) {
+      main.innerHTML = `
+        ${this.crumbs([{ label: 'الرئيسية', href: '#/' }, { label: 'المحاور الموضوعية' }])}
+        <h1 class="page">المحاور الموضوعية</h1>
+        <div class="card"><p>لم تُبنَ المحاور بعد. تُستخرج المحاور آلياً من تزامن الجذور في الآيات
+          (انتشار الوسوم على مخطط التزامن، مع ترجيح PMI)، ثم تُخزَّن في جدولَي <code>topic</code>
+          و<code>topic_root</code> داخل قاعدة البيانات.</p>
+          <div class="note">لبنائها: <code>python3 scripts/build_topics.py</code></div></div>`;
+      return;
+    }
+    const totalRoots = list.reduce((a, t) => a + t.size, 0);
+    const coverage = d.coverage != null ? d.coverage : 0;
+    const shown = list.slice(0, 30);
+    main.innerHTML = `
+      ${this.crumbs([{ label: 'الرئيسية', href: '#/' }, { label: 'المحاور الموضوعية' }])}
+      <h1 class="page">المحاور الموضوعية</h1>
+      <p class="lede">محاور مستخرجة آلياً من تزامن الجذور: كل جذر يُصانَف مع الجذور التي تكثر
+        مشاركتها له الآيات (دمج جشع للأهمية المجتمعية بعد تقليم الحواف بـ PMI)، ويُسمّى المحور
+        بأقوى جذوره ربطاً داخله. اضغط أي جذر لعرض صفحته، أو «خريطة المحور» لرسم خريطته الذهنية.</p>
+      <div class="grid cols-4">
+        ${this.tile('عدد المحاور', ar(list.length))}
+        ${this.tile('جذور مصنَّفة', num(totalRoots), d.roots_total ? `من ${num(d.roots_total)}` : '')}
+        ${this.tile('نسبة التغطية', coverage ? pct(coverage) : '—')}
+        ${this.tile('أكبر محور', `${ar(list[0].size)} جذراً`, esc(list[0].label))}
+      </div>
+      <div class="card"><h3>أكبر المحاور</h3><div id="tbars" class="bars"></div></div>
+      <div class="grid cols-2">
+        ${shown.map(t => `
+          <div class="card">
+            <h3 style="font-family:var(--quran-font);font-size:20px">${esc(t.label)}</h3>
+            <div class="meta" style="margin-bottom:10px">
+              <span class="chip stat">${ar(t.size)} جذراً</span>
+              <span class="chip stat">الوزن ${num(Math.round(t.weight))}</span>
+            </div>
+            <div class="wordgrid">
+              ${(t.roots || []).slice(0, 18).map(r => `<div class="wordcard" data-root="${r.id}">
+                <div class="t">${esc(r.arabic)}</div>
+                <div class="s"><span>${num(r.count)} وروداً</span></div></div>`).join('')}
+            </div>
+            ${(t.roots || []).length > 18 ? `<div class="note" style="margin-top:8px">
+              و${ar((t.roots || []).length - 18)} جذراً آخر — <a href="#/root/${(t.roots[18] || {}).id}">تصفّح</a></div>` : ''}
+            ${(t.roots || []).length ? `<div class="chips" style="margin-top:12px">
+              <button class="chip" data-mindmap="${esc((t.roots[0] || {}).bw || '')}">خريطة المحور</button>
+              <button class="chip" data-root="${(t.roots[0] || {}).id}">صفحة أبرز جذر</button>
+            </div>` : ''}
+          </div>`).join('')}
+      </div>
+      ${list.length > shown.length ? `<div class="note" style="margin-top:14px">
+        يُعرض أكبر ${ar(shown.length)} محوراً من ${ar(list.length)} — صغّر
+        <code>--max-size</code> أو ارفع <code>--resolution</code> لتحاور أدق.</div>` : ''}`;
+    Chart.barlist(document.getElementById('tbars'),
+      list.slice(0, 14).map(t => ({ label: t.label, value: t.size, extra: `الوزن ${Math.round(t.weight)}` })));
   },
 
   /* ------------------------------ المصادر ------------------------------ */
