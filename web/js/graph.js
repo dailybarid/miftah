@@ -25,7 +25,12 @@ const Graph = {
     svg.call(d3.zoom().scaleExtent([0.25, 5]).on('zoom', (ev) => root.attr('transform', ev.transform)));
 
     const nodes = data.nodes.map(d => Object.assign({}, d));
-    const links = data.links.map(d => Object.assign({}, d));
+    // حماية: رابط يشير إلى عقدة غير موجودة يُسقط d3 بالكامل فلا يُرسم شيء
+    const eid = l => (l && typeof l.source === 'object' ? l.source.id : l.source);
+    const tid = l => (l && typeof l.target === 'object' ? l.target.id : l.target);
+    const idset = new Set(nodes.map(n => n.id));
+    const links = (data.links || []).filter(l => idset.has(eid(l)) && idset.has(tid(l)))
+      .map(d => Object.assign({}, d));
     // حماية: بعض الرسوم لا تحمل أوزاناً (روابط تسلسل الكلمات مثلاً) — أي undefined
     // هنا كان يُنتج NaN في القوى فتتكدّس كل العقد فوق بعضها.
     const cnt = d => (Number.isFinite(+d.count) ? +d.count : 1);
@@ -144,8 +149,13 @@ const Graph = {
     if (!words.length) { container.innerHTML = '<div class="empty">لا توجد عقد لعرضها</div>'; return null; }
 
     const width = container.clientWidth || 900;
-    const margin = 40, step = 58, rowH = 146;
-    const perRow = Math.max(6, Math.min(16, Math.floor((width - 2 * margin) / step)));
+    const rowH = 146;
+    // على الشاشات الضيقة تقلّ الهوامش ويُشتقّ التباعد من العرض المتاح،
+    // فلا تخرج الكلمات عن الإطار ولا تتلاصق الجذور (كان step ثابتاً 58 فينفلت عند عرض < 360)
+    const margin = Math.min(40, Math.max(18, width * 0.06));
+    const perRow = Math.max(3, Math.min(16, Math.floor((width - 2 * margin) / 58)));
+    const step = Math.min(58, (width - 2 * margin) / perRow);
+    const wfs = step < 46 ? 12.5 : 15, rfs = step < 46 ? 10.5 : 12;
     const rows = Math.ceil(words.length / perRow);
     const height = opts.height || (rows * rowH + 70);
     // صفّ الكلمات من الأعلى، والجذور في نطاق أسفل كل صف
@@ -174,7 +184,7 @@ const Graph = {
       })).sort((a, b) => a.x - b.x);
       let last = -Infinity;
       for (const e of list) {
-        e.x = Math.max(e.x, last + 62, margin);
+        e.x = Math.max(e.x, last + Math.min(62, step), margin);
         last = e.x;
       }
       // إن تجاوزت الحدّ الأيسر، أعد التوزيع من اليسار
@@ -220,7 +230,7 @@ const Graph = {
     node.append('text')
       .text(d => d.label)
       .attr('font-family', 'var(--quran-font)')
-      .attr('font-size', d => (d.type === 'word' ? 15 : 12))
+      .attr('font-size', d => (d.type === 'word' ? wfs : rfs))
       .attr('text-anchor', 'middle')
       .attr('dy', d => (d.type === 'word' ? -rOf(d) - 7 : rOf(d) + 13));
 
@@ -250,6 +260,8 @@ const Graph = {
     })).filter(l => l.s && l.t);
 
     const maxC = d3.max(nodes, n => n.count) || 1;
+    // حماية موازية لحماية force(): لا وزن ⇒ لا NaN في سمك الروابط
+    const wt = l => (Number.isFinite(+l.weight) ? +l.weight : 1);
     const radiusOf = n => (n.level === 0 ? 15 + 17 * Math.sqrt((n.count || 1) / maxC)
                                          : 5 + 13 * Math.sqrt((n.count || 1) / maxC));
     // وزن الرابط من البذرة يحدّد ترتيب الجيران حولها
@@ -281,7 +293,7 @@ const Graph = {
     svg.call(d3.zoom().scaleExtent([0.3, 4]).on('zoom', ev => g.attr('transform',
       `translate(${width / 2},${height / 2}) scale(${fit * ev.transform.k})`)));
 
-    const maxW = d3.max(links, l => l.weight) || 1;
+    const maxW = d3.max(links, wt) || 1;
     const color = n => {
       const l = (n.label || '')[0] || '';
       return this.palette[(l.charCodeAt(0) || 0) % this.palette.length];
@@ -292,7 +304,7 @@ const Graph = {
       .attr('class', 'link')
       .attr('x1', l => pos.get(l.source).x).attr('y1', l => pos.get(l.source).y)
       .attr('x2', l => pos.get(l.target).x).attr('y2', l => pos.get(l.target).y)
-      .attr('stroke-width', l => 0.5 + 2.6 * (l.weight / maxW) * (l.s.level === 0 ? 1 : 0.6))
+      .attr('stroke-width', l => 0.5 + 2.6 * (wt(l) / maxW) * (l.s.level === 0 ? 1 : 0.6))
       .attr('stroke-opacity', l => l.s.level === 0 ? 0.75 : 0.35);
 
     // الوسوم: الجذر دائماً، والجيران الأبرز فقط (الباقي عند المرور)

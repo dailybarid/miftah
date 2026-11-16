@@ -756,18 +756,7 @@ const V = {
       const d = await API.mindmap({ seed: seedV, depth, branch });
       State.write(['mindmap'], { seed: seedV });
       if (d.error) { document.getElementById('mmwrap').innerHTML = `<div class="empty">${esc(d.error)}</div>`; return; }
-      // توزيع الجيران على محيط
-      const order = d.nodes.filter(n => n.level > 0);
-      const groups = new Map();
-      for (const l of d.links) if (d.nodes.find(n => n.id === l.source && n.level === 0)) groups.set(l.target, l.weight);
-      order.sort((a, b) => (groups.get(b.id) || 0) - (groups.get(a.id) || 0));
-      const perRing = branch;
-      order.forEach((n, i) => {
-        const ring = Math.floor(i / perRing), within = i % perRing;
-        const count = Math.min(perRing, order.length - ring * perRing);
-        n.radius = 180 + ring * 150;
-        n.angle = (within / count) * Math.PI * 2 + (ring % 2) * 0.4;
-      });
+      // التوزيع الحلقي يُحسب داخل Graph.mindmap (هندسياً، لا بالمحاكاة)
       Graph.mindmap(document.getElementById('mmwrap'), d, { height: 680, branch, onSelect: lab => this.mindmapNav(lab) });
     };
     document.getElementById('m-apply').onclick = () => load();
