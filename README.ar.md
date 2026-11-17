@@ -8,7 +8,7 @@
 ويُلحق **بكل نتيجة موضعها الدقيق**: السورة، الآية، رقم الكلمة، رقم الحرف في الآية وفي المصحف كاملاً، الجزء والحزب
 والربع والمنزل والرُّكوع والصفحة، مع إحصاءات الحروف والحركات وقيمة الجُمّل.
 
-> الفكرة الأصلية: `IDEA.md` — «an advanced quran search engine». هذا المشروع تنفيذ كامل لها.
+> الفكرة الأصلية: `IDEA.md` — «an davnced quran search engine» (كما هي، بخطئها المطبعي). هذا المشروع تنفيذ كامل لها.
 
 ---
 
@@ -127,7 +127,7 @@ data/quran.db   القاعدة المبنية (غير مُلتزَمة — تُ�
 | `GET /api/suggest` · `/api/tag` | الإكمال التلقائي · صفحة وسم الكلمة |
 | `GET /api/roots` · `/api/root/{id}` · `/api/lemma/{id}` · `/api/compare` | الجذور والموارد والمقارنة |
 | `GET /api/pos` · `/api/pos/search` | الأنماط النحوية |
-| `GET /api/stats` · `/api/stats/letters` · `/api/stats/analysis/{s}/{a}` · `/api/stats/without-letter` | الإحصاءات والتحليل |
+| `GET /api/stats` · `/api/stats/letters` · `/api/stats/ayah-letters/{s}/{a}` · `/api/stats/analysis/{s}/{a}` · `/api/stats/without-letter` | الإحصاءات والتحليل |
 | `GET /api/graph/roots` · `/api/graph/mindmap` · `/api/graph/ayah/{s}/{a}` · `/api/graph/word` | الشبكات والخريطة الذهنية |
 | `GET /api/topics` · `/api/random` | المحاور الموضوعية · آية عشوائية |
 
@@ -135,8 +135,9 @@ data/quran.db   القاعدة المبنية (غير مُلتزَمة — تُ�
 
 ## 7) ملاحظات دقّة
 
-- عدد كلمات خمس آيات يختلف بين تنزيل والصرف في مواضع الدمج (`بَعْدَمَا`)، وقد عُومل بوسم
-  `MERGED_WITH_PREVIOUS` وسُجّل في `corpus_word_merges` داخل تقرير البناء.
+- أربع آيات مواضع دمج يمتد فيها مدخل صرفي واحد على كلمتين عثمانيتين — 2:181 و8:6 و13:37 و37:130
+  (مثل `بَعْدَمَا`) — وُسمت `MERGED_WITH_PREVIOUS` وسُجّلت في `corpus_word_merges` داخل تقرير البناء.
+  (العدّاد الآخر `alignment.ayahs_need_alignment` = 6 ويقيس شيئاً مختلفاً.)
 - البسملة المدمجة في أول آية من 112 سورة تُستثنى من الإحصاءات (`basmalas_stripped`).
 - تُبنى القاعدة ذرّياً (ملف مؤقت ثم `os.replace`) لتفادي أي ملف WAL عالق.
 
@@ -169,6 +170,14 @@ python3 scripts/build_topics.py --resolution 6 --max-size 25   # محاور أد
 python3 -m unittest discover -s tests -t .          # كل الاختبارات
 python3 -m unittest tests.test_arabic -v            # طبقة العربية وحدها (بلا قاعدة بيانات)
 python3 tests/test_engine.py                        # المحرك وواجهة HTTP
+```
+
+عقد واجهة HTTP (8 اختبارات) يحتاج خادماً يعمل، ويقرؤه من `QURAN_BASE` (الافتراضي
+`http://127.0.0.1:8770`)؛ وإن لم يوجد يُتخطّى الصفّ كاملاً فيُطبع `Ran 53 tests … OK (skipped=1)`.
+فإن شغّلت الخادم على منفذ آخر:
+
+```bash
+QURAN_BASE=http://127.0.0.1:9000 python3 -m unittest discover -s tests -t .   # 61 اختباراً، OK
 ```
 
 ماذا تُثبت:

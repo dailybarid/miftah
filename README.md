@@ -131,7 +131,8 @@ data/sources/      The four source texts (committed to the repository)
 data/quran.db      Built database (not committed — built by the command above)
 ```
 
-Roughly 1,900 lines of Python in `app/`, 1,100 in `scripts/`, 1,850 lines of JavaScript, 340 of CSS.
+Roughly 1,875 lines of Python in `app/`, 1,085 in `scripts/`, 1,850 lines of JavaScript, and 337 of
+CSS in `app.css` (plus 385 generated `@font-face` lines in `fonts.css`).
 
 ## How the search works
 
@@ -205,7 +206,7 @@ python3 scripts/build_topics.py --resolution 6 --max-size 25     # finer axes
 | `GET /api/suggest` · `/api/tag` | Autocomplete · word tag page |
 | `GET /api/roots` · `/api/root/{id}` · `/api/lemma/{id}` · `/api/compare` | Roots, lemmas and comparison |
 | `GET /api/pos` · `/api/pos/search` | Parts of speech |
-| `GET /api/stats` · `/api/stats/letters` · `/api/stats/analysis/{s}/{a}` · `/api/stats/without-letter` | Statistics and per-āya analysis |
+| `GET /api/stats` · `/api/stats/letters` · `/api/stats/ayah-letters/{s}/{a}` · `/api/stats/analysis/{s}/{a}` · `/api/stats/without-letter` | Statistics and per-āya analysis |
 | `GET /api/graph/roots` · `/api/graph/mindmap` · `/api/graph/ayah/{s}/{a}` · `/api/graph/word` | Networks and mind map |
 | `GET /api/topics` · `/api/random` | Topic clusters · a random āya |
 
@@ -217,6 +218,14 @@ python3 scripts/build_topics.py --resolution 6 --max-size 25     # finer axes
 python3 -m unittest discover -s tests -t .          # all tests
 python3 -m unittest tests.test_arabic -v            # Arabic layer only (no database needed)
 python3 tests/test_engine.py                        # engine and HTTP API
+```
+
+The 8 HTTP-contract tests need a running server and read it from `QURAN_BASE` (default
+`http://127.0.0.1:8770`). Without one the whole class is skipped and unittest reports
+`Ran 53 tests … OK (skipped=1)`. So if you started the server on another port, point the suite at it:
+
+```bash
+QURAN_BASE=http://127.0.0.1:9000 python3 -m unittest discover -s tests -t .   # Ran 61 tests, OK
 ```
 
 | File | Coverage |
@@ -232,9 +241,10 @@ is atomic (temp file + `os.replace`) to avoid a stale WAL file.
 
 Two accuracy notes that are properties of the sources, not bugs:
 
-- Five āyāt differ in word count between Tanzil and the morphology corpus at merge points
-  (`بَعْدَمَا`). These are tagged `MERGED_WITH_PREVIOUS` and logged in `corpus_word_merges` in the
-  build report.
+- Four āyāt are merge points where one corpus word spans two ʿUthmānī words — 2:181, 8:6, 13:37 and
+  37:130 (e.g. `بَعْدَمَا`). They are tagged `MERGED_WITH_PREVIOUS` and listed in
+  `corpus_word_merges` in the build report. A separate counter, `alignment.ayahs_need_alignment`,
+  reports 6 āyāt needing alignment; the two numbers measure different things.
 - The basmala embedded at the start of the first āya of 112 sūras is excluded from statistics
   (`basmalas_stripped`), which is why the phrase «بسم الله الرحمن الرحيم» matches exactly two
   locations: 1:1 and 27:30.

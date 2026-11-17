@@ -3,7 +3,7 @@
 This repository redistributes material that is **not** covered by the project's own licence. Each
 item below keeps its own terms; the list is exhaustive for the files committed here.
 
-## Corpus data (`data/sources/`, 8.2 MB, committed)
+## Corpus data (`data/sources/`, 8.1 MiB, committed)
 
 These files are redistributed **verbatim and unmodified**, with attribution, as their licences require.
 
@@ -19,6 +19,11 @@ These files are redistributed **verbatim and unmodified**, with attribution, as 
 
 Because the morphology corpus is GPL, the derived database and any redistribution of it must remain
 GPL-compatible. If you redistribute a built database, keep this notice with it.
+
+One more note if you redistribute a built database: it is a transformation of the Tanzil texts in
+`data/sources/`, which are CC BY-ND 3.0, whose **NoDerivatives** term may restrict redistribution of
+derived forms. Ship those texts verbatim, keep this notice, and check <https://tanzil.net> for their
+terms — this paragraph is orientation, not legal advice.
 
 ## Fonts (`web/fonts/`)
 
@@ -49,7 +54,7 @@ Use of that service is subject to its own terms.
 
 ## Scope of the project licence
 
-Copyright (C) 2026 KHALED. The source code of this application (`app/`, `scripts/`, `web/js/`,
+Copyright (C) 2026 Khaled Mimoune (dailybarid). The source code of this application (`app/`, `scripts/`, `web/js/`,
 `web/css/`, `web/index.html`, `tests/`, `run.sh`, documentation) is licensed under the **GNU General
 Public License, version 3 or later** — see [`LICENSE`](LICENSE). Third-party components listed above
 are licensed by their own terms and are excluded from that grant.
