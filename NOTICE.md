@@ -25,11 +25,16 @@ GPL-compatible. If you redistribute a built database, keep this notice with it.
 | Font | Licence |
 |---|---|
 | KFGQPC HAFS Uthmanic Script (version 0.18) | KFGQPC electronic end-user licence agreement — free of cost to **use, copy and distribute**; the font may **not** be sold, modified, altered, translated, reverse engineered or decompiled, and is provided "as is". Full text: [`web/fonts/LICENSE-KFGQPC.txt`](web/fonts/LICENSE-KFGQPC.txt) |
-| Amiri Quran · IBM Plex Sans Arabic · Reem Kufi · Aref Ruqaa · Noto Naskh Arabic | SIL Open Font Licence 1.1 (Google Fonts releases) |
+| Amiri Quran · IBM Plex Sans Arabic · Reem Kufi · Aref Ruqaa · Noto Naskh Arabic | SIL Open Font Licence 1.1 (Google Fonts releases). The licence text of each family, with the copyright notice it carries, is reproduced in full in [`web/fonts/LICENSE-OFL.txt`](web/fonts/LICENSE-OFL.txt). |
 
 The KFGQPC font is shipped in its original, unmodified form; its agreement is reproduced in full
 beside it. It is an aggregated asset: the font's licence does **not** extend to the code in this
 repository, and the GPL grant below does **not** extend to the font.
+
+The five fonts under the SIL Open Font Licence are also shipped unmodified. OFL 1.1 requires the
+licence and the copyright notice to accompany every copy, so both travel with them in
+[`web/fonts/LICENSE-OFL.txt`](web/fonts/LICENSE-OFL.txt) — five verbatim texts, one per family,
+taken from `github.com/google/fonts`.
 
 ## JavaScript
 

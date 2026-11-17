@@ -54,7 +54,7 @@ alongside letter and diacritic counts, the morphological segmentation, the root,
 | **Topic clusters** | Roots are clustered into semantic axes automatically, with greedy modularity (CNM) — no external libraries. |
 | **Statistics** | Letters (written vs normalised), diacritics, parts of speech, juzʾ distribution, Meccan/Medinan, longest and shortest āyāt and words, sajda positions, and āyāt that avoid a given letter entirely. |
 | **Muṣḥaf view** | Index of the 114 sūras, every sūra with its āyāt, every word clickable, with recitation audio from five reciters. |
-| **HTTP API** | 27 documented endpoints, browsable at `/api/docs`. |
+| **HTTP API** | 25 documented endpoints at `/api/docs` (27 HTTP routes in all — the home page and `/healthz` stay out of the schema). |
 
 ## Screenshots
 
@@ -113,7 +113,7 @@ app/
                    classification, abjad values
   engine.py        Search engine: letter streams, exact positions, filters, roots and lemmas,
                    graphs, statistics
-  main.py          FastAPI: 27 API endpoints + static file serving
+  main.py          FastAPI: 25 documented endpoints, 27 routes + static file serving
 scripts/
   build_db.py      Build the SQLite database from Tanzil texts, the Leeds morphology corpus and
                    Tanzil metadata (atomic build: temp file + os.replace)
